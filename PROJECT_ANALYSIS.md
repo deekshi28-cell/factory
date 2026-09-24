@@ -190,6 +190,23 @@ python debug.py             # ask questions and see the retrieved chunks
 python run_tests.py         # automatic source-match test run
 ```
 
+### Response-time target: under 15 seconds per question
+
+`chat.py` loads the LLM before the first question and prints a timing line after each answer, e.g.
+`[OK] 9.8s total | search 0.3s | LLM 9.5s (model load 0.0s, read 2100 tokens in 3.1s, wrote 120 tokens in 6.2s)`.
+Run `python benchmark_latency.py --limit 20` to measure the median, 95th percentile and share of questions under 15 s on your machine.
+
+Speed settings (environment variables; defaults in brackets):
+
+| Variable | Default | Effect |
+|---|---|---|
+| `FACTORY_LLM_MODEL` | `qwen2.5:7b-instruct-q4_K_M` | Answer model. A smaller model (e.g. `qwen2.5:3b-instruct-q4_K_M`) is much faster on CPU; check quality with `run_tests.py` |
+| `FACTORY_LLM_KEEP_ALIVE` | `60m` | How long Ollama keeps the model loaded between questions |
+| `FACTORY_LLM_MAX_TOKENS` | `400` | Upper limit on answer length |
+| `FACTORY_LLM_NUM_CTX` | `4096` | Context size (fits 5 chunks + instructions) |
+| `FACTORY_N_RESULTS` | `5` | Chunks sent to the model; fewer = faster prompt reading |
+| `FACTORY_CHROMA_DIR`, `FACTORY_OLLAMA_URL` | `D:\FactoryKA\chroma_db`, `http://localhost:11434` | Paths / server |
+
 ---
 
 ## 7. Changes made so far
